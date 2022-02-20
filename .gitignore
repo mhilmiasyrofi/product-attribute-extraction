@@ -139,3 +139,5 @@ cython_debug/
 *.tar.gz
 *.zip
 .DS_Store
+
+models/
