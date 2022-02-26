@@ -1,9 +1,6 @@
 import os
 import sys
 import logging
-
-sys.path.append("../")
-
 import time
 from datetime import datetime
 import pytz
@@ -98,7 +95,7 @@ if __name__ == "__main__":
     model = BertForWordClassification.from_pretrained(
         model_name, config=config)
 
-    train_dataset_path = '../input/id-product-extraction/ecommerce.txt'
+    train_dataset_path = 'data/ecommerce.txt'
     train_dataset = NerShopeeDataset(
         train_dataset_path, tokenizer, lowercase=True)
     train_loader = NerDataLoader(dataset=train_dataset, max_seq_len=max_seq_len,
