@@ -46,9 +46,9 @@ if __name__ == "__main__":
     # Set random seed
     set_seed(26092020)
 
-    model_version = "large"
-    use_regularization = False
-    save_freq = 10
+    model_version = "base"
+    use_regularization = True
+    save_freq = 5
 
     model_dir = "models/bert-{}/".format(model_version)
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     model_dir += "/"
 
     # Train
-    n_epochs = 45
+    n_epochs = 25
 
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
@@ -90,22 +90,23 @@ if __name__ == "__main__":
     tokenizer = BertTokenizer.from_pretrained(model_name)
     config = BertConfig.from_pretrained(model_name)
     config.num_labels = NerShopeeDataset.NUM_LABELS
+    
 
     # Instantiate model
     model = BertForWordClassification.from_pretrained(
         model_name, config=config)
 
-    train_dataset_path = 'data/ecommerce.txt'
+    train_dataset_path = 'data/ecommerce-train.txt'
     train_dataset = NerShopeeDataset(
         train_dataset_path, tokenizer, lowercase=True)
     train_loader = NerDataLoader(dataset=train_dataset, max_seq_len=max_seq_len,
                                  batch_size=batch_size, num_workers=16, shuffle=True)
     
-    # valid_dataset_path = 'data/bert-fine-tune/validation.txt'
-    # valid_dataset = NerShopeeDataset(
-    #     valid_dataset_path, tokenizer, lowercase=True)
-    # valid_loader = NerDataLoader(dataset=valid_dataset, max_seq_len=max_seq_len,
-    #                              batch_size=eval_batch_size, num_workers=16, shuffle=False)
+    valid_dataset_path = 'data/ecommerce-test.txt'
+    valid_dataset = NerShopeeDataset(
+        valid_dataset_path, tokenizer, lowercase=True)
+    valid_loader = NerDataLoader(dataset=valid_dataset, max_seq_len=max_seq_len,
+                                 batch_size=eval_batch_size, num_workers=16, shuffle=False)
 
     w2i, i2w = NerShopeeDataset.LABEL2INDEX, NerShopeeDataset.INDEX2LABEL
 
@@ -115,7 +116,7 @@ if __name__ == "__main__":
         no_decay = ['bias', 'gamma', 'beta']
         optimizer_grouped_parameters = [
             {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
-             'weight_decay_rate': 0.01},
+             'weight_decay_rate': 0.3},
             {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
              'weight_decay_rate': 0.0}
         ]
@@ -134,16 +135,16 @@ if __name__ == "__main__":
     min_loss = sys.maxsize
     max_f1 = 0
     for epoch in range(n_epochs):
-        if epoch == 10:
+        if epoch == 5:
             for g in optimizer.param_groups:
                 g['lr'] = 3e-5
-        elif epoch == 17:
+        elif epoch == 7:
             for g in optimizer.param_groups:
                 g['lr'] = 2e-5
-        elif epoch == 30:
+        elif epoch ==9:
             for g in optimizer.param_groups:
                 g['lr'] = 1e-5
-        elif epoch == 35:
+        elif epoch ==10:
             for g in optimizer.param_groups:
                 g['lr'] = 5e-6
 
@@ -185,45 +186,45 @@ if __name__ == "__main__":
 
         # save a checkpoint every 5 epoch
         # or save checkpoints for the last 3 models
-        if (epoch > 0 and epoch % save_freq == 0) or epoch >= max(n_epochs - 3, 0):
-            model_path = "{}model-{}.pth".format(model_dir, epoch+1)
-            save(model_path, model, optimizer)
-            logger.info("save model checkpoint at {}".format(model_path))
+        # if (epoch > 0 and epoch % save_freq == 0) or epoch >= max(n_epochs - 3, 0):
+        #     model_path = "{}model-{}.pth".format(model_dir, epoch+1)
+        #     save(model_path, model, optimizer)
+        #     logger.info("save model checkpoint at {}".format(model_path))
 
         # Evaluate on validation
-        # model.eval()
-        # torch.set_grad_enabled(False)
+        model.eval()
+        torch.set_grad_enabled(False)
 
-        # total_loss, total_correct, total_labels = 0, 0, 0
-        # list_hyp, list_label = [], []
+        total_loss, total_correct, total_labels = 0, 0, 0
+        list_hyp, list_label = [], []
 
-        # pbar = tqdm(valid_loader, leave=True, total=len(valid_loader))
-        # for i, batch_data in enumerate(pbar):
-        #     batch_seq = batch_data[-1]
-        #     loss, batch_hyp, batch_label = forward_word_classification(
-        #         model, batch_data[:-1], i2w=i2w, device='cuda')
+        pbar = tqdm(valid_loader, leave=True, total=len(valid_loader))
+        for i, batch_data in enumerate(pbar):
+            batch_seq = batch_data[-1]
+            loss, batch_hyp, batch_label = forward_word_classification(
+                model, batch_data[:-1], i2w=i2w, device='cuda')
 
-        #     # Calculate total loss
-        #     valid_loss = loss.item()
-        #     total_loss = total_loss + valid_loss
+            # Calculate total loss
+            valid_loss = loss.item()
+            total_loss = total_loss + valid_loss
 
-        #     # Calculate evaluation metrics
-        #     list_hyp += batch_hyp
-        #     list_label += batch_label
-        #     metrics = ner_metrics_fn(list_hyp, list_label)
+            # Calculate evaluation metrics
+            list_hyp += batch_hyp
+            list_label += batch_label
+            metrics = ner_metrics_fn(list_hyp, list_label)
 
-        #     pbar.set_description("VALID LOSS:{:.4f} {}".format(
-        #         total_loss/(i+1), metrics_to_string(metrics)))
+            pbar.set_description("VALID LOSS:{:.4f} {}".format(
+                total_loss/(i+1), metrics_to_string(metrics)))
 
-        # metrics = ner_metrics_fn(list_hyp, list_label)
-        # logger.info("(Epoch {}) VALID LOSS:{:.4f} {}".format((epoch+1),
-        #                                                      total_loss/(i+1), metrics_to_string(metrics)))
+        metrics = ner_metrics_fn(list_hyp, list_label)
+        logger.info("(Epoch {}) VALID LOSS:{:.4f} {}".format((epoch+1),
+                                                             total_loss/(i+1), metrics_to_string(metrics)))
 
-        # if total_loss/(i+1) < min_loss and metrics["F1"] >= max_f1:
-        #     min_loss = total_loss/(i+1)
-        #     max_f1 = metrics["F1"]
+        if total_loss/(i+1) < min_loss and metrics["F1"] >= max_f1:
+            min_loss = total_loss/(i+1)
+            max_f1 = metrics["F1"]
 
-        #     model_path = "{}model-best.pth".format(model_dir)
-        #     logger.info("save model checkpoint at {}".format(model_path))
-        #     save(model_path, model, optimizer)
+            model_path = "{}model-best.pth".format(model_dir)
+            logger.info("save model checkpoint at {}".format(model_path))
+            save(model_path, model, optimizer)
             # https://github.com/huggingface/transformers/issues/7849
