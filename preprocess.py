@@ -169,6 +169,37 @@ def convert_stanford_to_bio(input_file:str, output_file:str):
                         out.write('\n')
                     is_last = False
 
+    
+def filter_bio(input_file:str, output_file:str):
+
+    def filter(s):
+        res = []
+        for token in s[:-1]:  # unfilter last sentence
+            word = token.split("\t")[0]
+            tag = token.split("\t")[1]
+            word = helper.remove_punctuation(word)
+            word = helper.remove_multiple_whitespace(word)
+
+            if word != "":
+                res.append(word + "\t" + tag)
+        return "".join(res)
+
+    with open(input_file, 'r', encoding="ascii", errors='ignore') as f, open(output_file, 'w') as out:
+        l = 0
+        s = []
+        for line in f.readlines():
+            if line[:-1] == "":
+                if l > 3:
+                    s = filter(s)
+                    out.write(s)
+                    out.write("\n")
+                l = 0
+                s = []
+            else:
+                l += 1
+                s.append(line)
+
+
 
 if __name__ == "__main__" :
 
@@ -186,6 +217,11 @@ if __name__ == "__main__" :
     output_file = "data/ecommerce-BIO.txt"
 
     convert_stanford_to_bio(input_file=input_file, output_file=output_file)
+
+    input_file = output_file
+    output_file = "data/ecommerce.txt"
+
+    filter_bio(input_file=input_file, output_file=output_file)
 
 
 
