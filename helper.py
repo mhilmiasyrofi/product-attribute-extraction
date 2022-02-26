@@ -31,3 +31,46 @@ def remove_multiple_whitespace(text):
     it covers tabs and newlines also
     """
     return re.sub(' +', ' ', text.replace('\n', ' ').replace('\t', ' ')).strip()
+
+
+def remove_punctuation(text):
+    """
+    Removing punctuations
+    """
+    return re.sub(r'[^\w\s]', r' ', text)
+
+
+def remove_space_between_quantity(text):
+    """
+    200 ml -> 200ml
+    3 kg -> 3kg
+    200 x 200 -> 200x200
+    3 in 1 -> 3in1
+    Example: "Double Tape DOUBLE FOAM TAPE 55 mm 45 m 45 makan   2000 x 2000 scs"
+    """
+    text = re.sub(r"([1-9][0-9]*)(in|inch)( |$)", r'\1inch ', text)
+    text = re.sub(r"([1-9][0-9]*)(m|meter)( |$)", r'\1m ', text)
+    text = re.sub(r"([1-9][0-9]*)(mm|milimeter)( |$)", r'\1mm ', text)
+    text = re.sub(r"([1-9][0-9]*)(cm|centimeter)( |$)", r'\1ccm ', text)
+    text = re.sub(r"([1-9][0-9]*)(pc|pcs|potong)( |$)", r'\1pcs ', text)
+    text = re.sub(r"([1-9][0-9]*)(y|year|thn|tahun)( |$)", r'\1tahun ', text)
+    text = re.sub(r"([1-9][0-9]*)(k|kilo|kg|kilogram)( |$)", r'\1kg ', text)
+    text = re.sub(r"([1-9][0-9]*)(g|gr|gram)( |$)", r'\1gr ', text)
+    text = re.sub(r"([1-9][0-9]*)(l|liter)( |$)", r'\1l ', text)
+    text = re.sub(r"([1-9][0-9]*)(ml|mililiter)( |$)", r'\1ml ', text)
+    text = re.sub(r"([1-9][0-9]*) (in|inch)( |$)", r'\1inch ', text)
+    text = re.sub(r"([1-9][0-9]*) (m|meter)( |$)", r'\1m ', text)
+    text = re.sub(r"([1-9][0-9]*) (mm|milimeter)( |$)", r'\1mm ', text)
+    text = re.sub(r"([1-9][0-9]*) (cm|centimeter)( |$)", r'\1ccm ', text)
+    text = re.sub(r"([1-9][0-9]*) (pc|pcs|potong)( |$)", r'\1pcs ', text)
+    text = re.sub(r"([1-9][0-9]*) (y|year|thn|tahun)( |$)", r'\1tahun ', text)
+    text = re.sub(r"([1-9][0-9]*) (k|kilo|kg|kilogram)( |$)", r'\1kg ', text)
+    text = re.sub(r"([1-9][0-9]*) (g|gr|gram)( |$)", r'\1gr ', text)
+    text = re.sub(r"([1-9][0-9]*) (l|liter)( |$)", r'\1l ', text)
+    text = re.sub(r"([1-9][0-9]*) (ml|mililiter)( |$)", r'\1ml ', text)
+    text = re.sub(
+        r"([1-9][0-9]*) (yard|set|lembar|tablet|kaplet|buah|box|sachet|pasang|gb|watt)( |$)", r'\1\2 ', text)
+
+    text = re.sub(r"([1-9][0-9]*) (x) ([1-9][0-9]*)", r'\1x\3', text)
+    text = re.sub(r"([1-9][0-9]*) (in) ([1-9][0-9]*)", r'\1in\3', text)
+    return text
