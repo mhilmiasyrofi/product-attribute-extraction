@@ -140,4 +140,4 @@ cython_debug/
 *.zip
 .DS_Store
 
-models/
+data/
