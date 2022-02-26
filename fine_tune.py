@@ -15,6 +15,9 @@ from tqdm import tqdm
 from transformers import BertConfig, BertTokenizer
 from nltk.tokenize import word_tokenize
 
+import seqeval
+import seqeval.metrics as seqeval_metrics
+
 from modules.word_classification import BertForWordClassification
 from modules.forward_fn import forward_word_classification
 from modules.metrics import ner_metrics_fn
@@ -52,7 +55,7 @@ if __name__ == "__main__":
 
     model_dir = "models/bert-{}/".format(model_version)
 
-    batch_size = 16
+    batch_size = 32
     eval_batch_size = 32
     max_seq_len = 128
     learning_rate = 5e-5
@@ -65,7 +68,7 @@ if __name__ == "__main__":
     model_dir += "/"
 
     # Train
-    n_epochs = 25
+    n_epochs = 30
 
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
@@ -116,7 +119,7 @@ if __name__ == "__main__":
         no_decay = ['bias', 'gamma', 'beta']
         optimizer_grouped_parameters = [
             {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
-             'weight_decay_rate': 0.3},
+             'weight_decay_rate': 0.1},
             {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
              'weight_decay_rate': 0.0}
         ]
@@ -228,3 +231,7 @@ if __name__ == "__main__":
             logger.info("save model checkpoint at {}".format(model_path))
             save(model_path, model, optimizer)
             # https://github.com/huggingface/transformers/issues/7849
+
+            score = seqeval_metrics.f1_score(list_label, list_hyp)
+            print(' - f1: {:04.2f}'.format(score * 100))
+            print(seqeval_metrics.classification_report(list_label, list_hyp, digits=4))
