@@ -14,6 +14,8 @@ Alternatively, you can also use virtual environment.
 
 ## Pipeline
 
+![Architecture](img/ecommerce-product-attribute-extraction-architecture.jpg)
+
 ### Data Preparation
 
 The dataset is annotated using Enamex format. The preparation contains several steps, i.e. convert enamex to stanford and convert stanford to bio format. After performing a manual inspection on the dataset, I found that there some incorrect labellings from the raw data that cause a failure when converting the enamex into stanford format. To handle this, I manually fix the wrong enamex format from the original file.
@@ -22,7 +24,16 @@ The dataset is annotated using Enamex format. The preparation contains several s
 python preprocess.py
 ```
 
+### Sequence Labelling
 
+Sequence labeling is a typical NLP task that assigns a specific label or class to each token within a sequence. In this context, a single word is a 'token'. These tags can be used in further downstream models as features of the token, or to enhance the model. Fine-tuning BERT for text tagging applications is illustrated in the figure below.
+
+![BERT For Token Classification Architecture](img/bert-for-token-classification.svg)
+
+To fine tune the model, please run this script
+```
+python fine_tune.py
+```
 
 
 
