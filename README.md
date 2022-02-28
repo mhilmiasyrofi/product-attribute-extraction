@@ -2,6 +2,10 @@
 
 In the e-commerce world, extracting product attributes is important. The extraction of attribute labels and values from free-text product descriptions can be useful for many tasks, such as product matching, product categorization, faceted product search, and product recommendation. 
 
+The image below shows the extracted attribute of a product titled 'Spigen Samsung S9 Case Ultra Copper Gold'.
+
+![Architecture](img/ecommerce-product-title-attribute.jpg)
+
 I examine this problem as a sequence labelling task and utilize BERT for Token Classification model to extract multi-attributes from the product offers in Indonesian e-commerce platform. The dataset is obtained from [this previous work](http://www.scielo.org.mx/scielo.php?script=sci_arttext&pid=S1405-55462018000401367#fn3). There are 16 kinds of attributes in their annotation scheme. Please check the paper directly to get more information about the dataset. 
 
 ## Prepare a Docker environment for the experiment
