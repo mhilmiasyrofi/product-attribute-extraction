@@ -12,7 +12,7 @@ def save_data(data, fpath):
 
 if __name__ == "__main__" :
 
-    set_seed(1)
+    set_seed(26092020)
     
     fpath = "data/ecommerce.txt"
 
