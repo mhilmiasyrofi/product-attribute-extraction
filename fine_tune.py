@@ -49,13 +49,13 @@ if __name__ == "__main__":
     # Set random seed
     set_seed(26092020)
 
-    model_version = "base"
+    model_version = "large"
     use_regularization = True
     save_freq = 5
 
     model_dir = "models/bert-{}/".format(model_version)
 
-    batch_size = 32
+    batch_size = 20
     eval_batch_size = 32
     max_seq_len = 128
     learning_rate = 5e-5
@@ -138,16 +138,16 @@ if __name__ == "__main__":
     min_loss = sys.maxsize
     max_f1 = 0
     for epoch in range(n_epochs):
-        if epoch == 5:
+        if epoch == 10:
             for g in optimizer.param_groups:
                 g['lr'] = 3e-5
-        elif epoch == 7:
+        elif epoch == 15:
             for g in optimizer.param_groups:
                 g['lr'] = 2e-5
-        elif epoch ==9:
+        elif epoch ==19:
             for g in optimizer.param_groups:
                 g['lr'] = 1e-5
-        elif epoch ==10:
+        elif epoch ==23:
             for g in optimizer.param_groups:
                 g['lr'] = 5e-6
 
