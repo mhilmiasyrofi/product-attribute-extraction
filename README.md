@@ -2,7 +2,7 @@
 
 In the e-commerce world, extracting product attributes is important. The extraction of attribute labels and values from free-text product descriptions can be useful for many tasks, such as product matching, product categorization, faceted product search, and product recommendation. 
 
-I use the BERT for token classification model to extract multi-attributes from the product offers in Indonesian e-commerce platform. The dataset is obtained from [this previous work](http://www.scielo.org.mx/scielo.php?script=sci_arttext&pid=S1405-55462018000401367#fn3). There are 16 kinds of attributes in their annotation scheme. Please check the paper directly to get more information about the dataset. 
+I examine this problem as a sequence labelling task and utilize BERT for Token Classification model to extract multi-attributes from the product offers in Indonesian e-commerce platform. The dataset is obtained from [this previous work](http://www.scielo.org.mx/scielo.php?script=sci_arttext&pid=S1405-55462018000401367#fn3). There are 16 kinds of attributes in their annotation scheme. Please check the paper directly to get more information about the dataset. 
 
 ## Prepare a Docker environment for the experiment
 ```
@@ -18,7 +18,7 @@ Alternatively, you can also use virtual environment.
 
 ### Data Preparation
 
-The dataset is annotated using Enamex format. The preparation contains several steps, i.e. convert enamex to stanford and convert stanford to bio format. After performing a manual inspection on the dataset, I found that there some incorrect labellings from the raw data that cause a failure when converting the enamex into stanford format. To handle this, I manually fix the wrong enamex format from the original file.
+The dataset is annotated using the Enamex format. The preparation contains several steps, i.e., convert Enamex to Stanford and convert Stanford to BIO format. After performing a manual inspection on the dataset, I found that some incorrect labellings from the raw data cause a failure when converting the Enamex into Stanford format. To handle this, I manually fix the wrong Enamex format from the original file.
 
 ```
 python preprocess.py
