@@ -12,6 +12,18 @@ pip install -r requirements.txt
 ```
 Alternatively, you can also use virtual environment.
 
+## Pipeline
+
+### Data Preparation
+
+The dataset is annotated using Enamex format. The preparation contains several steps, i.e. convert enamex to stanford and convert stanford to bio format. After performing a manual inspection on the dataset, I found that there some incorrect labellings from the raw data that cause a failure when converting the enamex into stanford format. To handle this, I manually fix the wrong enamex format from the original file.
+
+```
+python preprocess.py
+```
+
+
+
 
 
 
